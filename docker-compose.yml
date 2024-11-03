@@ -1,0 +1,27 @@
+services:
+    ryd_app:
+        container_name: ryd_app
+        environment:
+            APP_ENVIRONMENT: ${APP_ENVIRONMENT}
+        build:
+            context: .
+            dockerfile: Dockerfile
+        depends_on:
+            - ryd_postgres
+        ports:
+            - 3000:3000
+    ryd_postgres:
+        container_name: ryd_postgres
+        image: postgres
+        restart: always
+        ports:
+            - 5432:${DB_PORT}
+        volumes:
+            - ./ryd-postgres-data:/var/lib/postgresql/data
+            - ./src/migrations/dbinit.sql:/docker-entrypoint-initdb.d/dbinit.sql
+        environment:
+            POSTGRES_DB: ${DB_DATABASE}
+            POSTGRES_USER: ${DB_USER}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+volumes:
+    ryd-postgres-data:
